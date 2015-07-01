@@ -132,7 +132,7 @@ public class ClientService extends Thread {
 
 
     private void responseToInValidRequest() {
-        response = "We do not server requests other than GET or POST !!!";
+        response = "403 Forbidden";
         System.out.println("client "+ clientID + " invalid request");
     }
 
