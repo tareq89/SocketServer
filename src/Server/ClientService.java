@@ -15,12 +15,12 @@ public class ClientService extends Thread {
 
     StringBuilder headerFromClient;
     StringBuilder paramFromClient;
-    String line;
     String contentHeader = "Content-Length: ";
-    String methodToken;
+    String line = "";
+    String methodToken = "";
+    String response = "";
+    String clientQuery = "";
     int contentLength = 0;
-    String response;
-    String clientQuery;;
     StringTokenizer tokenizer;
     boolean validRequest;
     boolean requestedFileExists = false;
@@ -90,7 +90,6 @@ public class ClientService extends Thread {
 
 
     private void responseToPost() throws IOException {
-        response = "The Header is :\n\n" + headerFromClient;
         retrieveReqParam();
         response += "\n\n\nThe param with Post request is : \n\n" + paramFromClient;
         System.out.println("Param with Post Content :\n" +paramFromClient);
@@ -99,7 +98,6 @@ public class ClientService extends Thread {
 
 
     private void responseToGet() throws IOException {
-        response = "The Header is :\n\n" + headerFromClient;
         retrieveReqParam();
         System.out.println("Param with GET request : \n" + clientQuery);
 
