@@ -17,6 +17,7 @@ public class Server {
             int clientID = 1;
 
             while (true){
+
                 Socket clientSocket = serverSocket.accept();
                 ClientService clientService = new ClientService(clientSocket, clientID++);
                 executor.execute(clientService);
@@ -25,7 +26,7 @@ public class Server {
 
         } catch (Exception e){
 
-            e.printStackTrace();
+            System.out.println(e.getMessage());
         }
     }
 }

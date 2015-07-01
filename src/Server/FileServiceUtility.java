@@ -7,22 +7,31 @@ import java.io.*;
  */
 public class FileServiceUtility {
 
-    public static boolean writeFile(String filepath, String toBeWritten) {
-        File file = new File(filepath);
-        boolean writeSuccess = false;
+    public static String readFile(String filePath) {
+        String fileContent = "";
         try {
-            writeSuccess = writeFile(file, toBeWritten);
-        } catch (FileNotFoundException e) {
-            System.out.println("Error : could not found file " + filepath);
-        } catch (IOException e) {
-            System.out.println("Error : could not create file " + filepath);
+
+            FileReader fileReader = new FileReader(filePath);
+            fileContent = readFile(fileReader);
+
+        } catch (FileNotFoundException ex) {
+            System.out.println("Unable to open file '" + filePath + "'");
+        } catch (IOException ex) {
+            System.out.println("Error : Can not read " + filePath);
+        } finally {
+            return fileContent;
         }
-        return writeSuccess;
     }
-    private static boolean writeFile(File file, String toBeWritten) throws IOException {
-        OutputStream outputStream = new FileOutputStream(file);
-        outputStream.write(toBeWritten.getBytes());
-        outputStream.close();
-        return true;
+
+
+    private static String readFile(FileReader fileReader) throws IOException {
+        BufferedReader reader = new BufferedReader(fileReader);
+        String temp = "";
+        String fileContent = "";
+        while ((temp = reader.readLine()) != null) {
+            fileContent += temp;
+        }
+        reader.close();
+        return fileContent;
     }
 }
