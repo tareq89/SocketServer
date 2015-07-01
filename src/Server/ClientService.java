@@ -148,7 +148,7 @@ public class ClientService extends Thread {
             out.println(response);
         } else if (isGET()){
             out.println(response);
-            out.println("\nRequested file : " + clientQuery + "  doesn't exists");
+            out.println("\nHTTP Error 404 - File or Directory not found : \n\n" + clientQuery);
         } else {
             out.println(response);
         }
