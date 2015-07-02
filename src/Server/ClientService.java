@@ -13,7 +13,7 @@ public class ClientService extends Thread {
     int clientID;
     BufferedReader reader;
 
-    StringBuilder headerFromClient;
+    StringBuilder requestHeader;
     StringBuilder paramFromClient;
     String contentHeader = "Content-Length: ";
     String line = "";
@@ -26,7 +26,7 @@ public class ClientService extends Thread {
     boolean requestedFileExists = false;
 
 
-    ClientService(Socket socket, int id){
+    ClientService(Socket socket, int id) {
         clientSocket = socket;
         clientID = id;
     }
@@ -34,53 +34,53 @@ public class ClientService extends Thread {
 
     private void readHeader() throws IOException {
 
-        headerFromClient = new StringBuilder();
+        requestHeader = new StringBuilder();
         reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-        try{
-            while (!(line = reader.readLine()).equals("")){
-                headerFromClient.append(line + "\n");
-                if (line.startsWith(contentHeader)){
+        try {
+            while (!(line = reader.readLine()).equals("")) {
+                requestHeader.append(line + "\n");
+                if (line.startsWith(contentHeader)) {
                     contentLength = Integer.parseInt(line.substring(contentHeader.length()));
                 }
             }
-        } catch (NullPointerException e){
+        } catch (NullPointerException e) {
             validRequest = false;
         }
     }
 
 
-    private void tokenize(){
-        tokenizer = new StringTokenizer(headerFromClient.toString());
+    private void tokenize() {
+        tokenizer = new StringTokenizer(requestHeader.toString());
     }
 
 
-    private boolean isValidRequest(){
+    private boolean isValidRequest() {
 
         tokenize();
-        if (tokenizer.hasMoreElements()){
+        if (tokenizer.hasMoreElements()) {
             methodToken = tokenizer.nextToken();
             clientQuery = tokenizer.nextToken();
         }
-        if (isGET()||isPOST()){
+        if (isGET() || isPOST()) {
             validRequest = true;
         }
         return validRequest;
     }
 
 
-    private boolean isGET(){
+    private boolean isGET() {
         return methodToken.equals("GET");
     }
 
 
-    private boolean isPOST(){
+    private boolean isPOST() {
         return methodToken.equals("POST");
     }
 
 
     private void retrieveReqParam() throws IOException {
         paramFromClient = new StringBuilder();
-        int c = 0;
+        int c;
         for (int i = 0; i < contentLength; i++) {
             c = reader.read();
             paramFromClient.append((char) c);
@@ -89,15 +89,15 @@ public class ClientService extends Thread {
 
 
 
-    private void responseToPost() throws IOException {
+    private void responsePost() throws IOException {
         retrieveReqParam();
         response += "\n\n\nThe param with Post request is : \n\n" + paramFromClient;
-        System.out.println("Param with Post Content :\n" +paramFromClient);
+        System.out.println("Param with Post Content :\n" + paramFromClient);
     }
 
 
 
-    private void responseToGet() throws IOException {
+    private void responseGet() throws IOException {
         retrieveReqParam();
         System.out.println("Param with GET request : \n" + clientQuery);
 
@@ -105,13 +105,13 @@ public class ClientService extends Thread {
 
         File file = new File(clientQuery);
         requestedFileExists = file.exists();
-        if (requestedFileExists){
+        if (requestedFileExists) {
             response = FileServiceUtility.readFile(clientQuery);
             System.out.println("File exists and served to client");
 
 
         } else {
-            response += paramFromClient.toString();
+            response = "\nHTTP Error 404 - File or Directory not found : \n\n" + clientQuery;
             System.out.println("File doesn't exists !");
 
         }
@@ -120,35 +120,31 @@ public class ClientService extends Thread {
 
     private void responseToValidRequest() throws IOException {
 
+        System.out.println("Request Header :\n" + requestHeader);
 
-        System.out.println("Request Header :\n" +headerFromClient);
-
-        if (isPOST()){
-            responseToPost();
-        }else if (isGET()){
-            responseToGet();
+        if (isPOST()) {
+            responsePost();
+        } else if (isGET()) {
+            responseGet();
         }
     }
 
 
     private void responseToInValidRequest() {
         response = "403 Forbidden";
-        System.out.println("client "+ clientID + " invalid request");
+        System.out.println("client " + clientID + " invalid request");
     }
 
 
     public void writeToClient() throws IOException {
         PrintWriter out;
         out = new PrintWriter(clientSocket.getOutputStream());
-        if (requestedFileExists){
+        if (requestedFileExists) {
             out.println("HTTP/1.1 200 OK");
             out.println("Content-Type: text/html");
             out.println("Content-Length: " + response.length());
             out.println();
             out.println(response);
-        } else if (isGET()){
-            out.println(response);
-            out.println("\nHTTP Error 404 - File or Directory not found : \n\n" + clientQuery);
         } else {
             out.println(response);
         }
@@ -158,17 +154,19 @@ public class ClientService extends Thread {
 
 
     @Override
-    public void run(){
+    public void run() {
         System.out.println("client " + clientID + " created");
+
         try {
             readHeader();
-            if (isValidRequest())
+            if (isValidRequest()) {
                 responseToValidRequest();
-            else
+            }
+            else {
                 responseToInValidRequest();
+            }
             writeToClient();
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             System.out.println(e.getMessage());
         } finally {
             try {
