@@ -19,10 +19,6 @@ public class Client {
 
                 dataOutputStream.writeUTF("Hi ! I am Client !!");
                 dataOutputStream.flush();
-
-//                DataInputStream dataInputStream = new DataInputStream(socket.getInputStream());
-//                System.out.println(dataInputStream.readUTF());
-//                dataInputStream.close();
                 dataOutputStream.close();
 
             } catch (Exception e){
