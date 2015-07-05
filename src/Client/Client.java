@@ -1,6 +1,8 @@
 package Client;
 
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.net.Socket;
 import java.net.URLEncoder;
 
@@ -10,18 +12,21 @@ import java.net.URLEncoder;
 public class Client {
     public static void main(String[] args){
 
-        for (int i = 0; i <100 ; i++){
+        for (int i = 0; i <100000 ; i++){
             try{
                 Socket socket = new Socket("localhost",8080);
                 DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
 
                 dataOutputStream.writeUTF("Hi ! I am Client !!");
-
                 dataOutputStream.flush();
+
+//                DataInputStream dataInputStream = new DataInputStream(socket.getInputStream());
+//                System.out.println(dataInputStream.readUTF());
+//                dataInputStream.close();
                 dataOutputStream.close();
 
             } catch (Exception e){
-
+                e.printStackTrace();
             }
         }
     }

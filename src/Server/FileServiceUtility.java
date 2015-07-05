@@ -18,9 +18,9 @@ public class FileServiceUtility {
             System.out.println("Unable to open file '" + filePath + "'");
         } catch (IOException ex) {
             System.out.println("Error : Can not read " + filePath);
-        } finally {
-            return fileContent;
         }
+            return fileContent;
+
     }
 
 
